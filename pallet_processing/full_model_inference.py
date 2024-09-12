@@ -107,4 +107,4 @@ def get_prediction(image_path, side='bottom'):
         else:
             return 1
 
-# get_prediction('/home/nikitina.alina8/WB/test_project/kaggle/working/dataset/test/images/IMG_2691.jpeg', 'side')
+# get_prediction('dataset/test/images/IMG_2691.jpeg', 'side')
