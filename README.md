@@ -9,3 +9,5 @@
 - [Модель классификации паллетов (в пленке / не в пленке) [MobileNetV2]](https://drive.google.com/file/d/1ZVC8dSctN0Y13qOBmPS7XZXf268Ze-FU/view?usp=sharing)
 - [Модель классификации паллетов сбоку (заменить / не заменить) [ViT]](https://drive.google.com/file/d/1US2OXAzxvxiCNdqhHjbYOpCFdihkOqPj/view?usp=sharing)
 - [Модель классификации паллетов снизу (заменить / не заменить) [ViT]](https://drive.google.com/file/d/1hRHMrUeWchxfvrNhMT_qEDqU1OLNAlHO/view?usp=sharing)
+- [Модель детекции дефектов паллетов сбоку [YOLO]](https://drive.google.com/file/d/17WWpEjuxjfr29ru71TE-s26lF9ykZK3D/view?usp=sharing)
+- [Модель детекции дефектов паллетов снизу [YOLO]](https://drive.google.com/file/d/10SHS0pPYIl-_06InC66tfN99uVbYNHAW/view?usp=sharing)
