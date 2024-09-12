@@ -58,7 +58,7 @@ def get_prediction(image_path, side='bottom'):
     results = pallet_defect_detection_model(image_path, verbose=False, imgsz=1024)
 
     pallet_found = False
-    defect_found = True
+    defect_found = False
     x1, y1, x2, y2 = None, None, None, None
     defects_coords = []
 
