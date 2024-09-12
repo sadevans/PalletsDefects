@@ -3,8 +3,9 @@ import torch
 from torchvision import transforms
 from PIL import Image
 
-from inference_config import *
-from pallet_processing_models import *
+from pallet_processing_package.config.inference_config import *
+from pallet_processing_package.models.ViTPalletModel import *
+from pallet_processing_package.models.MobileNetV2MembraneModel import *
 
 pallet_defect_detection_model = YOLO(YOLO_MODEL_PATH)
 bottom_classification_model = get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, BOTTOM_CLASSIF_MODEL_PATH)
@@ -123,4 +124,3 @@ def get_prediction(image_path, side='bottom'):
             response['membrane'] = True
 
         return response
-    
