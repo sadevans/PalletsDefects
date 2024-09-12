@@ -2,9 +2,9 @@ import torch
 from torch import nn
 from torchvision import models
 from transformers import ViTModel
-from pallet_processing.pallet_processing_models import *
 from pallet_processing.settings import *
-
+from pallet_processing.models.ViTPalletModel import get_vit_model
+from pallet_processing.models.MobileNetV2MembraneModel import get_mobilenet_model
 from ultralytics import YOLO
 import torch
 from torchvision import transforms
@@ -32,9 +32,9 @@ class InferencePipeline():
         super(InferencePipeline, self).__init__()
 
         self.pallet_defect_detection_model = YOLO(os.path.join(MODELS_PATH, YOLO_MODEL_PATH))
-        self.bottom_classification_model = self.get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,BOTTOM_CLASSIF_MODEL_PATH))
-        self.side_classification_model = self.get_vit_model(SIDE_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,SIDE_CLASSIF_MODEL_PATH))
-        self.packet_classification_model = self.get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,PACKET_CLASSIF_MODEL_PATH))
+        self.bottom_classification_model = get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,BOTTOM_CLASSIF_MODEL_PATH))
+        self.side_classification_model = get_vit_model(SIDE_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,SIDE_CLASSIF_MODEL_PATH))
+        self.packet_classification_model = get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,PACKET_CLASSIF_MODEL_PATH))
 
         self.bottom_classification_model.eval()
         self.side_classification_model.eval()
@@ -45,17 +45,7 @@ class InferencePipeline():
         self.packet_classification_model.to(DEVICE)
 
 
-    def get_vit_model(self, num_labels, model_path):
-        model = ViTForImageClassification(num_labels=num_labels)
-        model.load_state_dict(torch.load(model_path, map_location=DEVICE))
-        return model
 
-
-    def get_mobilenet_model(self, num_labels, model_path):
-        model = models.mobilenet_v2(weights="IMAGENET1K_V1")
-        model.classifier[1] = nn.Linear(model.last_channel, num_labels)
-        model.load_state_dict(torch.load(model_path, map_location=DEVICE))
-        return model
 
 
     # Трансформации для инференса
@@ -158,4 +148,3 @@ class InferencePipeline():
                 response['membrane'] = True
 
             return response
-        
