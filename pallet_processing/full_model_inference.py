@@ -52,11 +52,15 @@ def _vit_predict_image(model, image_tensor, class_names, device):
 
 
 def get_prediction(image_path, side='bottom'):
+
+    response = {"replace_pallet": False, "defects_coords": [], "membrane": False, "pallet_coords": []}
+
     results = pallet_defect_detection_model(image_path, verbose=False, imgsz=1024)
 
     pallet_found = False
     defect_found = True
     x1, y1, x2, y2 = None, None, None, None
+    defects_coords = []
 
     for result in results:
         boxes = result.boxes
@@ -67,16 +71,20 @@ def get_prediction(image_path, side='bottom'):
                 x1, y1, x2, y2 = map(int, box.xyxy[0])
             elif label == 1:
                 defect_found = True
+                d_x1, d_y1, d_x2, d_y2 = map(int, box.xyxy[0])
+                defects_coords.append([d_x1, d_y1, d_x2, d_y2])
 
     # Если паллет не найден - заменить паллет
 
     if not pallet_found:
-        return 0
+        response["replace_pallet"] = True
+        return response
 
     # Если найдет дефект - заменить паллет
 
     if defect_found:
-        return 0
+        response['defects_coords'] = defects_coords
+        return response
 
     image_tensor = _load_image(image_path, x1, y1, x2, y2).to(device)
 
@@ -87,24 +95,23 @@ def get_prediction(image_path, side='bottom'):
         # Если паллет на замену - заменить паллет
 
         if predicted_class == DEFECT_CLASS_NAMES[1]:
-            return 0
-        else:
-            return 1
+            response['replace_pallet'] = True
+
+        return response
+
     else:
 
         predicted_class = _vit_predict_image(side_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
 
         # Если паллет на замену - заменить паллет
         if predicted_class == DEFECT_CLASS_NAMES[1]:
-            return 0
+            response['replace_pallet'] = True
 
         outputs = packet_classification_model(image_tensor)
         preds = torch.round(torch.sigmoid(outputs)).int().item()
 
         if preds == 1:
-            # Если паллет в пленке - заменить паллет
-            return 0
-        else:
-            return 1
+            response['membrane'] = True
 
+        return response
 # get_prediction('dataset/test/images/IMG_2691.jpeg', 'side')
