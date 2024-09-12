@@ -4,23 +4,18 @@ from torchvision import transforms
 from PIL import Image
 
 from pallet_processing.config.inference_config import *
-from pallet_processing.models.ViTPalletModel import *
 from pallet_processing.models.MobileNetV2MembraneModel import *
 
 pallet_defect_detection_model = YOLO(YOLO_MODEL_PATH)
-bottom_classification_model = get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, BOTTOM_CLASSIF_MODEL_PATH)
-side_classification_model = get_vit_model(SIDE_CLASSIF_NUM_LABELS, SIDE_CLASSIF_MODEL_PATH)
+bottom_defect_detection_model = YOLO(YOLO_BOTTOM_MODEL_PATH)
+side_defect_detection_model = YOLO(YOLO_SIDE_MODEL_PATH)
 packet_classification_model = get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, PACKET_CLASSIF_MODEL_PATH)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using device: {device}')
 
-bottom_classification_model.eval()
-side_classification_model.eval()
 packet_classification_model.eval()
 
-bottom_classification_model.to(device)
-side_classification_model.to(device)
 packet_classification_model.to(device)
 
 
@@ -31,14 +26,16 @@ def _get_inference_transforms():
         transforms.ToTensor(),
     ])
 
-
 # Загрузка изображения и его предобработка
-def _load_image(image_path, x1, y1, x2, y2):
+
+def _get_cropped_image(image_path, x1, y1, x2, y2):
     img = Image.open(image_path).convert("RGB")
     img = img.crop((x1, y1, x2, y2))
+    return img
+
+def _transform_image(img):
     transforms_pipeline = _get_inference_transforms()
     return transforms_pipeline(img).unsqueeze(0)  # Добавляем batch dimension
-
 
 def _vit_predict_image(model, image_tensor, class_names, device):
     model.eval()
@@ -93,28 +90,15 @@ def get_prediction(image_path, side='bottom'):
         response['defects_coords'] = defects_coords
         return response
 
-    image_tensor = _load_image(image_path, x1, y1, x2, y2).to(device)
+    cropped_pallet = _get_cropped_image(image_path, x1, y1, x2, y2)
 
     if side == 'bottom':
 
-        with torch.no_grad():
-            predicted_class = _vit_predict_image(bottom_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
-
-        # Если паллет на замену - заменить паллет
-
-        if predicted_class == DEFECT_CLASS_NAMES[1]:
-            response['replace_pallet'] = True
-
-        return response
+        results = bottom_defect_detection_model(cropped_pallet, verbose=False, imgsz=1024)
 
     else:
 
-        with torch.no_grad():
-            predicted_class = _vit_predict_image(side_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
-
-        # Если паллет на замену - заменить паллет
-        if predicted_class == DEFECT_CLASS_NAMES[1]:
-            response['replace_pallet'] = True
+        image_tensor = _transform_image(cropped_pallet).to(device)
 
         with torch.no_grad():
             outputs = packet_classification_model(image_tensor)
@@ -123,4 +107,10 @@ def get_prediction(image_path, side='bottom'):
         if preds == 1:
             response['membrane'] = True
 
-        return response
+        results = side_defect_detection_model(cropped_pallet, verbose=False, imgsz=1024)
+
+    boxes = results[0].boxes
+    if len(boxes) != 0:
+        response["replace_pallet"] = True
+
+    return response
