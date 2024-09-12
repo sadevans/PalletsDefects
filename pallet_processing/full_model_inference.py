@@ -28,29 +28,16 @@ def _get_inference_transforms():
 
 # Загрузка изображения и его предобработка
 
+
 def _get_cropped_image(image_path, x1, y1, x2, y2):
     img = Image.open(image_path).convert("RGB")
     img = img.crop((x1, y1, x2, y2))
     return img
 
+
 def _transform_image(img):
     transforms_pipeline = _get_inference_transforms()
     return transforms_pipeline(img).unsqueeze(0)  # Добавляем batch dimension
-
-def _vit_predict_image(model, image_tensor, class_names, device):
-    model.eval()
-    with torch.no_grad():
-        # start_time = time.time()
-
-        image_tensor = image_tensor.to(device)
-
-        outputs = model(image_tensor)
-
-        _, predicted_class = torch.max(outputs, dim=1)
-
-        # inference_time = time.time() - start_time
-
-        return class_names[predicted_class.item()]
 
 
 def get_prediction(image_path, side='bottom'):
