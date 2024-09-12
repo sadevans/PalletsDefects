@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from transformers import ViTModel
+from pallet_processing.settings import DEVICE
 
 
 class ViTForImageClassification(nn.Module):
@@ -19,5 +20,5 @@ class ViTForImageClassification(nn.Module):
 
 def get_vit_model(num_labels, model_path):
     model = ViTForImageClassification(num_labels=num_labels)
-    model.load_state_dict(torch.load(model_path))
+    model.load_state_dict(torch.load(model_path, map_location=DEVICE))
     return model
