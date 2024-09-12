@@ -14,6 +14,10 @@ packet_classification_model = get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, PAC
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using device: {device}')
 
+bottom_classification_model.eval()
+side_classification_model.eval()
+packet_classification_model.eval()
+
 bottom_classification_model.to(device)
 side_classification_model.to(device)
 packet_classification_model.to(device)
@@ -92,7 +96,8 @@ def get_prediction(image_path, side='bottom'):
 
     if side == 'bottom':
 
-        predicted_class = _vit_predict_image(bottom_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
+        with torch.no_grad():
+            predicted_class = _vit_predict_image(bottom_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
 
         # Если паллет на замену - заменить паллет
 
@@ -103,17 +108,19 @@ def get_prediction(image_path, side='bottom'):
 
     else:
 
-        predicted_class = _vit_predict_image(side_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
+        with torch.no_grad():
+            predicted_class = _vit_predict_image(side_classification_model, image_tensor, DEFECT_CLASS_NAMES, device)
 
         # Если паллет на замену - заменить паллет
         if predicted_class == DEFECT_CLASS_NAMES[1]:
             response['replace_pallet'] = True
 
-        outputs = packet_classification_model(image_tensor)
-        preds = torch.round(torch.sigmoid(outputs)).int().item()
+        with torch.no_grad():
+            outputs = packet_classification_model(image_tensor)
+            preds = torch.round(torch.sigmoid(outputs)).int().item()
 
         if preds == 1:
             response['membrane'] = True
 
         return response
-# get_prediction('dataset/test/images/IMG_2691.jpeg', 'side')
+    
