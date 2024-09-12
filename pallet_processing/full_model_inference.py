@@ -80,6 +80,8 @@ def get_prediction(image_path, side='bottom'):
         response["replace_pallet"] = True
         return response
 
+    response['pallet_coords'] = [x1, y1, x2, y2]
+
     # Если найдет дефект - заменить паллет
 
     if defect_found:
