@@ -3,14 +3,14 @@ import torch
 from torchvision import transforms
 from PIL import Image
 
-# from inference_config import *
-from pallet_processing.settings import *
-from pallet_processing.pallet_processing_models import *
+from pallet_processing_package.config.inference_config import *
+from pallet_processing_package.models.ViTPalletModel import *
+from pallet_processing_package.models.MobileNetV2MembraneModel import *
 
-pallet_defect_detection_model = YOLO(os.path.join(MODELS_PATH, YOLO_MODEL_PATH))
-bottom_classification_model = get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,BOTTOM_CLASSIF_MODEL_PATH))
-side_classification_model = get_vit_model(SIDE_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,SIDE_CLASSIF_MODEL_PATH))
-packet_classification_model = get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, os.path.join(MODELS_PATH,PACKET_CLASSIF_MODEL_PATH))
+pallet_defect_detection_model = YOLO(YOLO_MODEL_PATH)
+bottom_classification_model = get_vit_model(BOTTOM_CLASSIF_NUM_LABELS, BOTTOM_CLASSIF_MODEL_PATH)
+side_classification_model = get_vit_model(SIDE_CLASSIF_NUM_LABELS, SIDE_CLASSIF_MODEL_PATH)
+packet_classification_model = get_mobilenet_model(PACKET_CLASSIF_NUM_LABELS, PACKET_CLASSIF_MODEL_PATH)
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using device: {device}')
@@ -124,4 +124,3 @@ def get_prediction(image_path, side='bottom'):
             response['membrane'] = True
 
         return response
-    
