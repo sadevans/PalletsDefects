@@ -23,9 +23,9 @@
 - [Модель классификации паллетов сбоку (заменить / не заменить) [ViT]](https://drive.google.com/file/d/1US2OXAzxvxiCNdqhHjbYOpCFdihkOqPj/view?usp=sharing)
 - [Модель классификации паллетов снизу (заменить / не заменить) [ViT]](https://drive.google.com/file/d/1hRHMrUeWchxfvrNhMT_qEDqU1OLNAlHO/view?usp=sharing)
 - [Модель детекции дефектов паллетов сбоку [YOLO]](https://drive.google.com/file/d/17WWpEjuxjfr29ru71TE-s26lF9ykZK3D/view?usp=sharing)
-  ![изображение](https://github.com/user-attachments/assets/92f69bef-cda2-40a6-9502-51cde9948db6)
-- [Модель детекции дефектов паллетов снизу [YOLO]](https://drive.google.com/file/d/10SHS0pPYIl-_06InC66tfN99uVbYNHAW/view?usp=sharing)
   ![изображение](https://github.com/user-attachments/assets/06a63f40-2740-4aff-9ab2-03aaf9b52542)
+- [Модель детекции дефектов паллетов снизу [YOLO]](https://drive.google.com/file/d/10SHS0pPYIl-_06InC66tfN99uVbYNHAW/view?usp=sharing)
+  ![изображение](https://github.com/user-attachments/assets/92f69bef-cda2-40a6-9502-51cde9948db6)
 
 ### Примеры тестирования моделей на данных X5
 ![0514270a-20240910_105614](https://github.com/user-attachments/assets/98346a65-e0c8-45b9-bda2-ab78c1ea36e9)
