@@ -33,7 +33,7 @@
 ![8c2cbdbc-20240910_101210](https://github.com/user-attachments/assets/2d3d5f66-c013-4ed5-a224-aa9cf41cb0e6)
 ![e33db34d-20240910_104551](https://github.com/user-attachments/assets/b9dc0352-c8cd-4735-92fa-e2ae04ccb87b)
 
-- ### Файловая архитектура проекта
+### Файловая архитектура проекта
   ```
   .
   ├── dataset_preparation_scripts
